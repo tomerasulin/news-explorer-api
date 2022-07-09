@@ -4,10 +4,18 @@ const User = require('../models/user');
 const ErrorHandler = require('../errors/error');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-
-// HTML statuses
-const HTTP_OK = 200;
-const CREATED = 201;
+const {
+  HTTP_OK,
+  CREATED,
+  NOT_FOUND,
+  BAD_REQUEST,
+  NOT_FOUND_ERR,
+  CAST_ERR,
+  INVALID_INPUT_ERR,
+  VALIDATION_ERR,
+  MONGO,
+  CONFLICT,
+} = require('../utils/constants');
 
 // GET /users/me
 // returns information about the logged-in user (email and name)
@@ -15,7 +23,7 @@ const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new ErrorHandler(404, 'Not Found');
+        throw new ErrorHandler(NOT_FOUND, NOT_FOUND_ERR);
       }
       return res.status(HTTP_OK).send({
         name: user.name,
@@ -24,8 +32,8 @@ const getCurrentUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ErrorHandler(400, 'Invalid Input'));
+      if (err.name === CAST_ERR) {
+        next(new ErrorHandler(BAD_REQUEST, INVALID_INPUT_ERR));
       } else {
         next(err);
       }
@@ -57,10 +65,12 @@ const createUser = (req, res, next) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, email, password: hash }))
-    .then((user) => res.status(CREATED).send(user))
+    .then((user) => res.status(CREATED).send({ name, email, _id: user._id }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ErrorHandler(400, 'Invalid Input'));
+      if (err.name === VALIDATION_ERR) {
+        next(new ErrorHandler(BAD_REQUEST, INVALID_INPUT_ERR));
+      } else if (err.code === MONGO) {
+        next(new ErrorHandler(CONFLICT, 'User already exists'));
       } else {
         next(err);
       }
