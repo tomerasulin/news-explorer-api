@@ -16,11 +16,11 @@ const validateURL = (value, helpers) => {
 };
 
 // GET /articles
-router.get('/', getAllArticles);
+router.get('/articles', getAllArticles);
 
 // POST /articles
 router.post(
-  '/',
+  '/articles',
   celebrate({
     body: Joi.object().keys({
       keyword: Joi.string().required(),
@@ -37,7 +37,7 @@ router.post(
 
 // DELETE /articles/articleId
 router.delete(
-  '/articleId',
+  '/articles/:articleId',
   celebrate({
     params: Joi.object().keys({
       articleId: Joi.string().hex().length(24),

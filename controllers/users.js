@@ -26,7 +26,7 @@ const getCurrentUser = (req, res, next) => {
         throw new ErrorHandler(NOT_FOUND, NOT_FOUND_ERR);
       }
       return res.status(HTTP_OK).send({
-        name: user.name,
+        username: user.username,
         email: user.email,
         _id: user._id.toString(),
       });
@@ -61,11 +61,11 @@ const login = (req, res, next) => {
 // Creates a user with the passed
 // email, password, and name in the body
 const createUser = (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
   bcrypt
     .hash(password, 10)
-    .then((hash) => User.create({ name, email, password: hash }))
-    .then((user) => res.status(CREATED).send({ name, email, _id: user._id }))
+    .then((hash) => User.create({ username, email, password: hash }))
+    .then((user) => res.status(CREATED).send({ username, email, _id: user._id }))
     .catch((err) => {
       if (err.name === VALIDATION_ERR) {
         next(new ErrorHandler(BAD_REQUEST, INVALID_INPUT_ERR));

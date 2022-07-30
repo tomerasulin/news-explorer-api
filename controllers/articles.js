@@ -28,9 +28,7 @@ const getAllArticles = (req, res, next) => {
 // creates an article with the passed
 // keyword, title, text, date, source, link, and image in the body
 const createArticle = (req, res, next) => {
-  const {
-    keyword, title, text, date, source, link, image,
-  } = req.body;
+  const { keyword, title, text, date, source, link, image } = req.body;
   Article.create({
     keyword,
     title,
@@ -42,7 +40,9 @@ const createArticle = (req, res, next) => {
     owner: req.user._id,
   })
     .then((article) => {
-      Article.populate(article, { path: 'owner' }).then(() => res.status(CREATED).send(article));
+      Article.populate(article, { path: 'owner' }).then(() =>
+        res.status(CREATED).send(article)
+      );
     })
     .catch(next);
 };
@@ -50,13 +50,10 @@ const createArticle = (req, res, next) => {
 // DELETE /articles/articleId
 // deletes the stored article by _id
 const deleteArticle = (req, res, next) => {
-  Article.findById(req.params.articleId)
+  Article.findByIdAndDelete(req.params.articleId)
     .orFail()
-    .then((article) => {
-      if (article.owner._id.toString() !== req.user._id) {
-        throw new ErrorHandler(FORBIDDEN, FORBIDDEN_ERR);
-      }
-      return Article.findByIdAndDelete(req.params.articleId).then(() => res.status(HTTP_OK).send({ message: 'Article has been deleted' }));
+    .then(() => {
+      res.status(HTTP_OK).send({ message: 'Article has been deleted' });
     })
     .catch((err) => {
       if (err.name === CAST_ERR) {

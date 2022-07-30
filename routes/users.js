@@ -4,7 +4,7 @@ const { getCurrentUser } = require('../controllers/users');
 
 // GET /users/me
 router.get(
-  '/me',
+  '/users/me',
   celebrate({
     headers: Joi.object().keys({}).unknown(true),
   }),
