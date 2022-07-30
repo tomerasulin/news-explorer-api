@@ -6,7 +6,7 @@ const cors = require('cors');
 const routes = require('./routes/index');
 require('dotenv').config();
 
-const { PORT = 3000, DB = 'mongodb://localhost:27017/newsdb' } = process.env;
+const { PORT = 3001, DB = 'mongodb://localhost:27017/newsdb' } = process.env;
 
 const app = express();
 
