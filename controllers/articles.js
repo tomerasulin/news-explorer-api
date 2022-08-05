@@ -19,7 +19,10 @@ const getAllArticles = (req, res, next) => {
   Article.find({})
     .populate('owner')
     .then((articles) => {
-      res.status(HTTP_OK).send(articles);
+      const currentUserArticles = articles.filter(
+        (article) => article.owner._id.toString() === req.user._id
+      );
+      res.status(HTTP_OK).send(currentUserArticles);
     })
     .catch(next);
 };

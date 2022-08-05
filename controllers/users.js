@@ -50,7 +50,7 @@ const login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
+        { expiresIn: '7d' }
       );
       res.send({ token });
     })
@@ -65,7 +65,9 @@ const createUser = (req, res, next) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ username, email, password: hash }))
-    .then((user) => res.status(CREATED).send({ username, email, _id: user._id }))
+    .then((user) =>
+      res.status(CREATED).send({ username, email, _id: user._id })
+    )
     .catch((err) => {
       if (err.name === VALIDATION_ERR) {
         next(new ErrorHandler(BAD_REQUEST, INVALID_INPUT_ERR));
