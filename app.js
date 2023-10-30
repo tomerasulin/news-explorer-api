@@ -32,7 +32,7 @@ app.use(requestLogger); // enabling the request logger
 app.use(limiter);
 
 // routes
-app.use('/api', routes);
+app.use('/', routes);
 
 app.use(errorLogger); // enabling the error logger
 app.use(errors()); // celebrate error handler
